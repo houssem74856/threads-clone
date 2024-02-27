@@ -22,7 +22,7 @@ function Header({ user }: any) {
       toast.error(error.message);
     }
 
-    router.refresh()
+    router.push('/')
   }
 
   return (
