@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Button from "./ui/Button";
+import Button from "./ui/MyButton";
 import { FaUserAlt } from "react-icons/fa";
 
 export const User = ({ user }: any) => {

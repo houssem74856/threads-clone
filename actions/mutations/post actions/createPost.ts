@@ -9,6 +9,7 @@ interface Params {
 }
 
 export const createPost = async ({id, content}: Params) => {
+
   const db = await supabaseServer()
   const { error } = await db
     .from('posts')

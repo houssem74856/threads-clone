@@ -1,34 +1,36 @@
+"use client";
 
-import { IconType } from 'react-icons';
-import { twMerge } from 'tailwind-merge';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
+import { twMerge } from "tailwind-merge";
+import { usePathname, useRouter } from "next/navigation";
+import useModal from "@/hooks/useModalStore";
 
-/*interface SidebarItemProps {
-  Icon: IconType;
+interface SidebarItemProps {
+  Icon: React.ReactNode;
   label: string;
-  active?: boolean;
   href: string;
-}*/
+  currentUser: any;
+}
 
-const SidebarItem = ({
-  Icon,
-  label,
-  active,
-  href
-}: any) => {
-  return ( 
-    <form action={async () => {
-      'use server'
-      revalidatePath('/', 'layout')}
-    }>
-    <button >
-      <Link 
-        href={href}
-        className={twMerge(`
-          flex 
+const SidebarItem = ({ Icon, label, href, currentUser }: SidebarItemProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const active = href === pathname;
+  const { onOpen } = useModal();
+
+  const handleClick = () => {
+    if (href !== "/" && !currentUser) {
+      onOpen("signIn");
+    } else {
+      router.push(href);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={twMerge(
+        `
+        flex 
           flex-row 
           h-auto 
           items-center 
@@ -41,16 +43,13 @@ const SidebarItem = ({
           transition
           text-neutral-400
           py-1`,
-          active && "text-white"
-          )
-        }
-      >
-        {Icon}
-        <h1 className="truncate w-100 text-lg">{label}</h1>
-      </Link>
+        active && "text-white"
+      )}
+    >
+      {Icon}
+      <h1 className="truncate w-100 text-lg">{label}</h1>
     </button>
-    </form>
-   );
-}
+  );
+};
 
 export default SidebarItem;

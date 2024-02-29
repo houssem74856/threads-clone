@@ -1,44 +1,41 @@
 "use client";
 
 import { AiFillGithub } from "react-icons/ai";
-import Modal from './ui/Modal';
-import { Input } from './ui/Input';
-import { useState } from 'react'
-import useSignUpModal from '@/hooks/useSignUpModal';
-import Button from './ui/Button';
-import useSignInModal from '@/hooks/useSignInModal';
-import { 
-  FieldValues, 
-  SubmitHandler,
-  useForm
-} from "react-hook-form";
-import toast from 'react-hot-toast';
+import Modal from "@/components/ui/MyModal";
+import { Input } from "@/components/ui/MyInput";
+import { useState } from "react";
+import Button from "@/components/ui/MyButton";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import useModal from "@/hooks/useModalStore";
 
 const SignUpModal = () => {
-  const signUpModal = useSignUpModal();
-  const signInModal = useSignInModal();
+  const { type, isOpen, onOpen, onClose } = useModal();
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
+  const isModalOpen = isOpen && type === "signUp";
 
-  const { 
-    register, 
+  const {
+    register,
     handleSubmit,
     resetField,
-    formState: {
-      errors,
-    },
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      username: '',
-      email: '',
-      password: ''
+      username: "",
+      email: "",
+      password: "",
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = async ({ email, password, username }) => {
-    setIsLoading(true)
+  const onSubmit: SubmitHandler<FieldValues> = async ({
+    email,
+    password,
+    username,
+  }) => {
+    setIsLoading(true);
 
     const { error: supabaseError } = await supabase.auth.signUp({
       email: email,
@@ -47,57 +44,56 @@ const SignUpModal = () => {
         data: {
           user_name: username,
         },
-        emailRedirectTo: `${location.origin}/auth/callback`
+        emailRedirectTo: `${location.origin}/auth/callback`,
       },
-    })
+    });
 
     if (supabaseError) {
       return toast.error(supabaseError.message);
     }
 
-    router.refresh()
+    router.refresh();
 
-    toast.success("Check email for verification")
+    toast.success("Check email for verification");
 
-    resetField('username')
-    resetField('email')
-    resetField('password')
-    signUpModal.onClose();
+    resetField("username");
+    resetField("email");
+    resetField("password");
+    onClose();
 
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   async function signInWithGithub() {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-    })
+      provider: "github",
+    });
 
-    if(error) {
-      toast.error(error.message)
+    if (error) {
+      toast.error(error.message);
     }
 
-    router.refresh()
+    router.refresh();
   }
 
   const onChange = (open: boolean) => {
     if (!open) {
-      signUpModal.onClose();
+      onClose();
     }
-  }
+  };
 
   const toggle = () => {
-    signUpModal.onClose()
-    signInModal.onOpen()
-  }
+    onOpen("signIn");
+  };
 
   return (
-    <Modal 
-      title="Welcome to Threads" 
-      description="Create an Account!" 
-      isOpen={signUpModal.isOpen} 
-      onChange={onChange} 
+    <Modal
+      title="Welcome to Threads"
+      description="Create an Account!"
+      isOpen={isModalOpen}
+      onChange={onChange}
     >
-      <div className="flex flex-col gap-4">   
+      <div className="flex flex-col gap-4">
         <Input
           id="username"
           label="Username"
@@ -131,7 +127,7 @@ const SignUpModal = () => {
         >
           Sign up
         </Button>
-        <Button 
+        <Button
           className="bg-neutral-700 text-neutral-300 rounded-md font-medium  relative"
           onClick={signInWithGithub}
         >
@@ -146,25 +142,28 @@ const SignUpModal = () => {
           Continue with Github
         </Button>
         <p
-          className='
+          className="
           text-sm 
           leading-normal 
           text-center
-        '
+        "
         >
           Already have an account?
-          <span 
-            onClick={toggle} 
+          <span
+            onClick={toggle}
             className="
               text-neutral-400 
               cursor-pointer 
               hover:underline
             "
-            > Log in</span>
+          >
+            {" "}
+            Log in
+          </span>
         </p>
       </div>
     </Modal>
   );
-}
+};
 
 export default SignUpModal;

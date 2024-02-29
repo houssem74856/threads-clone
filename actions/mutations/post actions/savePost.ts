@@ -1,5 +1,6 @@
-import { supabase } from "@/lib/supabase";
-import toast from "react-hot-toast";
+'use server'
+
+import { supabaseServer } from "@/lib/supabaseServer";
 
 interface Params {
   user_id: string,
@@ -7,16 +8,11 @@ interface Params {
 }
 
 export const savePost = async ({user_id, post_id}: Params) => {
-  const { error } = await supabase
-    .from('saved_posts')
-    .insert({
-      user_id,
-      post_id,
-    });
-
-  if (error) {
-    toast.error(error.message);
-  } else {
-    toast.success('Post saved!')
-  }
+  const db = await supabaseServer()
+  await db
+  .from('saved_posts')
+  .insert({
+    user_id,
+    post_id,
+  });
 };

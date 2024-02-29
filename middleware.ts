@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
     }
   })
 
-  if (req.nextUrl.pathname === "/") {
+  if (req.nextUrl.pathname === "/" || "/profile/*") {
     return res
   }
 

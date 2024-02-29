@@ -1,93 +1,85 @@
 "use client";
 
 import { AiFillGithub } from "react-icons/ai";
-import { useRouter } from 'next/navigation';
-import useSignInModal from "@/hooks/useSignInModal";
-import Modal from './ui/Modal';
-import { Input } from './ui/Input';
-import { useState } from 'react'
-import Button from './ui/Button';
-import useSignUpModal from '@/hooks/useSignUpModal';
-import { 
-  FieldValues, 
-  SubmitHandler,
-  useForm
-} from "react-hook-form";
+import { useRouter } from "next/navigation";
+import Modal from "@/components/ui/MyModal";
+import { Input } from "@/components/ui/MyInput";
+import { useState } from "react";
+import Button from "@/components/ui/MyButton";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabase";
+import useModal from "@/hooks/useModalStore";
 
 const SignInModal = () => {
   const router = useRouter();
-  const signUpModal = useSignUpModal();
-  const signInModal = useSignInModal();
+  const { type, isOpen, onOpen, onClose } = useModal();
   const [isLoading, setIsLoading] = useState(false);
+  const isModalOpen = isOpen && type === "signIn";
 
-  const { 
-    register, 
+  const {
+    register,
     handleSubmit,
     resetField,
-    formState: {
-      errors,
-    },
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      email: '',
-      password: ''
+      email: "",
+      password: "",
     },
   });
 
   const onSubmit: SubmitHandler<FieldValues> = async ({ email, password }) => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
-    })
+    });
 
     if (error) {
       return toast.error(error.message);
     }
 
-    router.refresh()
+    router.refresh();
 
-    toast.success("Logged in")
+    toast.success("Logged in");
 
-    resetField("email")
-    resetField("password")
-    signInModal.onClose();
+    resetField("email");
+    resetField("password");
+    onClose();
 
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   async function signInWithGithub() {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-    })
+      provider: "github",
+    });
 
-    if(error) {
-      toast.error(error.message)
+    if (error) {
+      toast.error(error.message);
     }
 
-    router.refresh()
+    router.refresh();
   }
 
   const onChange = (open: boolean) => {
     if (!open) {
-      signInModal.onClose();
+      onClose();
     }
-  }
+  };
 
   const toggle = () => {
-    signInModal.onClose()
-    signUpModal.onOpen()
-  }
+    onOpen("signUp");
+  };
 
   return (
-    <Modal 
-      title="Welcome back" 
-      description="Login to your account." 
-      isOpen={signInModal.isOpen} 
-      onChange={onChange} 
+    <Modal
+      title="Welcome back"
+      description="Login to your account."
+      isOpen={isModalOpen}
+      onChange={onChange}
     >
       <div className="flex flex-col gap-4">
         <Input
@@ -115,7 +107,7 @@ const SignInModal = () => {
         >
           Log in
         </Button>
-        <Button 
+        <Button
           className="bg-neutral-700 text-neutral-300 rounded-md font-medium  relative"
           onClick={signInWithGithub}
         >
@@ -129,26 +121,29 @@ const SignInModal = () => {
           />
           Continue with Github
         </Button>
-        <p 
-          className='
+        <p
+          className="
           text-sm 
           leading-normal 
           text-center
-        '
+        "
         >
           First time using Threads?
-          <span 
-            onClick={toggle} 
+          <span
+            onClick={toggle}
             className="
             text-neutral-400 
               cursor-pointer 
               hover:underline
             "
-            > Create an account</span>
+          >
+            {" "}
+            Create an account
+          </span>
         </p>
       </div>
     </Modal>
   );
-}
+};
 
 export default SignInModal;
