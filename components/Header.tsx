@@ -2,14 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { FaUserAlt } from "react-icons/fa";
-import Button from "@/components/ui/MyButton";
+import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import useModal from "@/hooks/useModalStore";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Loader2 } from "lucide-react";
 
-function Header({ user }: any) {
+export default function Header({ user }: any) {
   const router = useRouter();
   const { onOpen } = useModal();
 
@@ -28,44 +30,34 @@ function Header({ user }: any) {
     <div className="flex items-center gap-x-4 flex-row-reverse">
       {user ? (
         <>
-          <div>
-            {user.user_metadata?.avatar_url ? (
-              <Image
-                className="rounded-full"
-                width={40}
-                height={40}
-                src={user.user_metadata.avatar_url}
-                alt="avatar"
-              />
-            ) : (
-              <Link href={`/profile/${user.id}`}>
-                <Button className="px-3 py-3">
-                  <FaUserAlt />
-                </Button>
-              </Link>
-            )}
-          </div>
-          <div>
-            <Button onClick={handleLogout}>Logout</Button>
-          </div>
+          {user.user_metadata?.avatar_url ? (
+            <Avatar>
+              <AvatarImage src={user.user_metadata.avatar_url} />
+              <AvatarFallback className="bg-transparent">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <Link href={`/profile/${user.id}`}>
+              <Button variant="outline" size="icon">
+                <FaUserAlt />
+              </Button>
+            </Link>
+          )}
+          <Button onClick={handleLogout}>Logout</Button>
         </>
       ) : (
         <>
-          <div>
-            <Button onClick={() => onOpen("signIn")}>Log in</Button>
-          </div>
-          <div>
-            <Button
-              onClick={() => onOpen("signUp")}
-              className="bg-transparent text-neutral-300 font-medium"
-            >
-              Sign up
-            </Button>
-          </div>
+          <Button onClick={() => onOpen("signIn")}>Log in</Button>
+          <Button
+            onClick={() => onOpen("signUp")}
+            variant="ghost"
+            className="text-base"
+          >
+            Sign up
+          </Button>
         </>
       )}
     </div>
   );
 }
-
-export default Header;

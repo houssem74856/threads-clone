@@ -3,8 +3,10 @@ import toast from "react-hot-toast";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabaseServer";
 
-function CommentForm({ user, parentPostId }: any) {
+function CommentForm({ user, parentPostId, parentPostOwner }: any) {
   const submitPost = async (formData: FormData) => {
+    "use server";
+
     if (user) {
       const content = formData.get("content") as string;
 
@@ -13,6 +15,13 @@ function CommentForm({ user, parentPostId }: any) {
         user_id: user?.id,
         content,
         parent_id: parentPostId,
+      });
+
+      await db.from("notifications").insert({
+        to: parentPostOwner,
+        from: user.id,
+        type: "comment",
+        post_id: parentPostId,
       });
 
       if (error) {

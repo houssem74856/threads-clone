@@ -25,7 +25,11 @@ async function page({ params }: any) {
         user={currentUser}
         parentId={post.parent_id}
       />
-      <CommentForm user={currentUser} parentPostId={post.id} />
+      <CommentForm
+        user={currentUser}
+        parentPostId={post.id}
+        parentPostOwner={post.profiles.id}
+      />
       <div className="mt-2">
         {comments.length === 0 ? (
           <div className="text-neutral-400">No comments yet.</div>

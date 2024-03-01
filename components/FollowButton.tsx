@@ -23,6 +23,12 @@ export default function FollowButton({ user, currentUser, isFollow }: any) {
         following: user.id,
       });
 
+      await supabase.from("notifications").insert({
+        to: user.id,
+        from: currentUser.id,
+        type: "follow",
+      });
+
       if (error) {
         console.log(error);
       }
