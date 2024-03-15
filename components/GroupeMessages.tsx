@@ -6,11 +6,11 @@ import { FaUserAlt } from "react-icons/fa";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
-export default function Messages({
+export default function GroupeMessages({
   messages,
   currentUser,
-  otherUser,
-  dialogue_id,
+  otherUsers,
+  groupe_id,
 }: any) {
   const router = useRouter();
   supabase
@@ -23,7 +23,7 @@ export default function Messages({
         table: "messages",
       },
       (payload) => {
-        if (payload.new.dialogue_id === dialogue_id) {
+        if (payload.new.groupe_id === groupe_id) {
           router.refresh();
         }
       }
@@ -36,12 +36,18 @@ export default function Messages({
         <div key={msg.id}>
           {msg.from !== currentUser?.id ? (
             <div className="flex flex-row gap-x-2">
-              {otherUser?.avatar_url ? (
+              {otherUsers.find((user: any) => {
+                return user.profiles.id === msg.from;
+              })?.profiles.avatar_url ? (
                 <Image
                   className="rounded-full hover:cursor-pointer"
                   width={40}
                   height={40}
-                  src={otherUser.avatar_url}
+                  src={
+                    otherUsers.find(
+                      (user: any) => user.profiles.id === msg.from
+                    ).profiles.avatar_url
+                  }
                   alt="avatar"
                 />
               ) : (

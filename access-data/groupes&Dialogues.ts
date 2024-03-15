@@ -68,3 +68,25 @@ export const getDialogueById = async ({id, currentUserId}: any) => {
 
   return {dialogue}
 }
+
+export const getGroupeById = async ({id}: any) => {
+  const db = await supabaseServer()
+  const{ data, error: error } = await db
+    .from('groupes')
+    .select("*")
+    .eq('id', id)
+    .single()
+    
+  if (error) {
+    return {error: {message: error.message}};
+  }
+
+  const{ data: otherUsers } = await db
+    .from('profiles_x_groupes')
+    .select("profiles(id, username, avatar_url)")
+    .eq('groupe_id',id)
+
+  const groupe = {...data, otherUsers}
+
+  return {groupe}
+}
