@@ -1,12 +1,14 @@
-import { didHeLiked, didHeSaved } from "@/access-data/posts";
+//import { didHeLiked, didHeSaved } from "@/access-data/posts";
 
 import Image from "next/image";
 import Button from "./ui/MyButton";
 import { FaRegComment, FaUserAlt } from "react-icons/fa";
 import Link from "next/link";
 import LikeButton from "./LikeButton";
-import DeleteButton from "./DeleteButton";
 import SaveButton from "./SaveButton";
+import DeleteMainButton from "./DeleteMainButton";
+import { didHeLike } from "@/actions/mutations/post actions/didHeLike";
+import { didHeSave } from "@/actions/mutations/post actions/didHeSave";
 
 export default async function MainPost({
   id,
@@ -16,11 +18,11 @@ export default async function MainPost({
   user,
   parentId,
 }: any) {
-  const liked = await didHeLiked({
+  const liked = await didHeLike({
     user_id: user.id,
     post_id: id,
   });
-  const saved = await didHeSaved({
+  const saved = await didHeSave({
     user_id: user.id,
     post_id: id,
   });
@@ -72,9 +74,7 @@ export default async function MainPost({
         <SaveButton id={id} user={user} saved={saved} />
       </div>
       {profiles.id === user?.id && (
-        <Link href={parentId ? `/post/${parentId}` : "/"}>
-          <DeleteButton id={id} />
-        </Link>
+        <DeleteMainButton id={id} parentId={parentId} />
       )}
     </div>
   );

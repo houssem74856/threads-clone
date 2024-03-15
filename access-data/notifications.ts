@@ -15,13 +15,13 @@ export const getNotificationsByUserId = async ({ userId }: any) => {
   const unreadNotif: any[] = []
   const readNotif: any[] = []
 
-  data.forEach((notif) => {
-    if(notif.isRead) {
-      readNotif.push(notif)
+  for(let i = 0; i < data.length ; i++) {
+    if(data[i].isRead) {
+      readNotif.push(data[i])
     } else {
-      unreadNotif.push(notif)
+      unreadNotif.push(data[i])
     }
-  })
+  }
   
   return {readNotif, unreadNotif};
 };

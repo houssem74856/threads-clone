@@ -1,35 +1,25 @@
 import Button from "./ui/MyButton";
-import toast from "react-hot-toast";
 import { revalidatePath } from "next/cache";
-import { supabaseServer } from "@/lib/supabaseServer";
+import { createPost } from "@/actions/mutations/post actions/createPost";
 
-function CommentForm({ user, parentPostId, parentPostOwner }: any) {
+export default function CommentForm({
+  user,
+  parentPostId,
+  parentPostOwner,
+}: any) {
   const submitPost = async (formData: FormData) => {
     "use server";
 
-    if (user) {
-      const content = formData.get("content") as string;
+    const content = formData.get("content") as string;
 
-      const db = await supabaseServer();
-      const { error } = await db.from("posts").insert({
-        user_id: user?.id,
-        content,
-        parent_id: parentPostId,
-      });
+    await createPost({
+      id: user.id,
+      content,
+      parent_id: parentPostId,
+      parentPostOwner,
+    });
 
-      await db.from("notifications").insert({
-        to: parentPostOwner,
-        from: user.id,
-        type: "comment",
-        post_id: parentPostId,
-      });
-
-      if (error) {
-        return toast.error(error.message);
-      }
-
-      revalidatePath(`/post/${parentPostId}`);
-    }
+    revalidatePath(`/post/${parentPostId}`);
   };
 
   return (
@@ -45,5 +35,3 @@ function CommentForm({ user, parentPostId, parentPostOwner }: any) {
     </form>
   );
 }
-
-export default CommentForm;

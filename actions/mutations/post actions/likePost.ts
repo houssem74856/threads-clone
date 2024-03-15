@@ -1,6 +1,7 @@
 'use server'
 
 import { supabaseServer } from "@/lib/supabaseServer";
+import { createNotification } from "../notification actions/createNotification";
 
 interface Params {
   user_id: string
@@ -18,12 +19,5 @@ export const likePost = async ({user_id, post_id, postOwner_id}: Params) => {
     post_id,
   });
     
-  await db
-  .from('notifications')
-  .insert({
-    to: postOwner_id,
-    from: user_id,
-    type: "like",
-    post_id
-  });
+  await createNotification({currentUser: user_id, user: postOwner_id, type: "like"})
 };

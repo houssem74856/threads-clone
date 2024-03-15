@@ -7,15 +7,19 @@ import { likePost } from "@/actions/mutations/post actions/likePost";
 import { useState } from "react";
 import { unlikePost } from "@/actions/mutations/post actions/unlikePost";
 import useModal from "@/hooks/useModalStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LikeButton({ id, profiles, user, liked }: any) {
   const [isliked, setIsLiked] = useState(liked);
   const { onOpen } = useModal();
+  const queryClient = useQueryClient();
 
   const handleLike = async () => {
     if (!user) {
       return onOpen("signIn");
     }
+
+    setIsLiked(!isliked);
 
     if (isliked) {
       await unlikePost({
@@ -29,8 +33,7 @@ export default function LikeButton({ id, profiles, user, liked }: any) {
         postOwner_id: profiles.id,
       });
     }
-
-    setIsLiked(!isliked);
+    queryClient.invalidateQueries({ queryKey: ["infinite"] });
   };
 
   return (

@@ -1,39 +1,16 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
-import Button from "./ui/MyButton";
-import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
+import { unfollow } from "@/actions/mutations/follower action/unfollow";
+import { follow } from "@/actions/mutations/follower action/follow";
 
 export default function FollowButton({ user, currentUser, isFollow }: any) {
-  const router = useRouter();
   const followOrUnfollow = async () => {
     if (isFollow) {
-      const { error } = await supabase
-        .from("followers")
-        .delete()
-        .eq("follower", currentUser.id)
-        .eq("following", user.id);
-
-      if (error) {
-        console.log(error);
-      }
+      await unfollow({ currentUser: currentUser.id, user: user.id });
     } else {
-      const { error } = await supabase.from("followers").insert({
-        follower: currentUser.id,
-        following: user.id,
-      });
-
-      await supabase.from("notifications").insert({
-        to: user.id,
-        from: currentUser.id,
-        type: "follow",
-      });
-
-      if (error) {
-        console.log(error);
-      }
+      await follow({ currentUser: currentUser.id, user: user.id });
     }
-    router.refresh();
   };
 
   return (

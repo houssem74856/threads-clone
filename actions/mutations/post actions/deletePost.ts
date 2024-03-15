@@ -16,5 +16,5 @@ export const deletePost = async ({ post_id }: Params) => {
   .delete()
   .eq('id', post_id)
 
-  revalidatePath('/')
+  //revalidatePath('/')
 };

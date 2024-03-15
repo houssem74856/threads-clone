@@ -2,25 +2,20 @@
 
 import { supabaseServer } from "@/lib/supabaseServer";
 import { revalidatePath } from "next/cache";
+import { createNotification } from "../notification actions/createNotification";
 
-interface Params {
-  id: string,
-  content: string
-}
-
-export const createPost = async ({id, content}: Params) => {
+export const createPost = async ({id, content, parent_id, parentPostOwner}: any) => {
 
   const db = await supabaseServer()
-  const { error } = await db
+  await db
     .from('posts')
     .insert({
       user_id: id,
       content: content,
+      parent_id
     });
 
-  if (error) {
-    throw new Error('something went wrong')
-  }else {
-    revalidatePath('/')
+  if(parent_id) {
+    await createNotification({currentUser: id, user: parentPostOwner, type: "comment"})
   }
 };

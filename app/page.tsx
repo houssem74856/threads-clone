@@ -1,13 +1,16 @@
 import { getPosts } from "@/access-data/posts";
 import { fetchCurrentUser } from "@/access-data/users";
+import { fetchInfinitePosts } from "@/actions/mutations/post actions/fetchInfinitePosts";
 
 import Header from "@/components/Header";
 import Post from "@/components/Post";
 import PostForm from "@/components/PostForm";
+import Posts from "@/components/Posts";
 
 export default async function Home() {
-  const { posts, error } = await getPosts();
+  //const { posts: inf } = await fetchInfinitePosts(1);
   const { currentUser } = await fetchCurrentUser();
+  const { posts, error } = await getPosts(currentUser?.id);
 
   if (error) {
     return <div>{error.message}</div>;
@@ -20,11 +23,19 @@ export default async function Home() {
       <h1 className="text-white text-2xl font-semibold mt-4 mb-1">
         Newest Posts
       </h1>
-      {posts.length === 0 ? (
-        <div className="text-neutral-400">No posts available.</div>
-      ) : (
-        <div className="flex flex-col gap-y-2">
-          {posts.map((post) => (
+      <Posts currentUser={currentUser} posts={posts}>
+        {/*posts.map((post: any) => (
+          <Post
+            key={post.id}
+            id={post.id}
+            content={post.content}
+            created_at={post.created_at}
+            profiles={post.profiles}
+            user={currentUser}
+          />
+        ))*/}
+        {/*inf &&
+          inf.map((post: any) => (
             <Post
               key={post.id}
               id={post.id}
@@ -33,9 +44,8 @@ export default async function Home() {
               profiles={post.profiles}
               user={currentUser}
             />
-          ))}
-        </div>
-      )}
+          ))*/}
+      </Posts>
     </div>
   );
 }

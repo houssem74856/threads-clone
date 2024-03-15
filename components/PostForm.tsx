@@ -3,10 +3,12 @@
 import Button from "./ui/MyButton";
 import toast from "react-hot-toast";
 import { createPost } from "@/actions/mutations/post actions/createPost";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { UploadButton } from "@/utils/uploadthing";
 
 export default function PostForm({ user }: any) {
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -21,6 +23,9 @@ export default function PostForm({ user }: any) {
         id: user.id,
         content,
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["infinite"] });
+    },
   });
 
   //const textAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -56,6 +61,18 @@ export default function PostForm({ user }: any) {
       >
         {isPending ? "Loading..." : "Post"}
       </Button>
+      <UploadButton
+        endpoint="imageUploader"
+        onClientUploadComplete={(res) => {
+          // Do something with the response
+          console.log("Files: ", res);
+          alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
+        }}
+      />
     </form>
   );
 }

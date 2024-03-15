@@ -10,6 +10,7 @@ import Link from "next/link";
 import useModal from "@/hooks/useModalStore";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Loader2 } from "lucide-react";
+import { NewSignInModal } from "./modals/NewSignInModal";
 
 export default function Header({ user }: any) {
   const router = useRouter();
@@ -58,6 +59,7 @@ export default function Header({ user }: any) {
           </Button>
         </>
       )}
+      <NewSignInModal />
     </div>
   );
 }

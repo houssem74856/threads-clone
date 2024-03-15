@@ -3,17 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const requestHeaders = new Headers(req.headers)
-  requestHeaders.set("x-pathname", req.nextUrl.pathname)
 
   const res = NextResponse.next({
     request: {
       headers: requestHeaders
     }
   })
-
-  if (req.nextUrl.pathname === "/" || "/profile/*") {
-    return res
-  }
 
   const supabase = createMiddlewareClient({ req, res })
 
@@ -22,6 +17,10 @@ export async function middleware(req: NextRequest) {
       session
     }
   } = await supabase.auth.getSession()
+
+  if (req.nextUrl.pathname === "/" || "/profile/*") {
+    return res
+  }
   
   if (!session) {
     return NextResponse.redirect(new URL('/', req.url))

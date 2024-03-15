@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/lib/supabaseServer"
+import { revalidatePath } from "next/cache"
 
 export const fetchCurrentUser = async () => { 
   const db = await supabaseServer()
@@ -21,6 +22,16 @@ export const getRecommendedUsers = async () => {
   if (error) {
     return {error: {message: error.message}}
   }
+
+  return {users: data}
+};
+
+export const getUsers = async () => {
+  const db = await supabaseServer()
+  const { data, error } = await db
+    .from('profiles')
+    .select('*')
+    .order('created_at', { ascending: false })
 
   return {users: data}
 };

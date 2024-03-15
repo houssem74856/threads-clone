@@ -1,4 +1,4 @@
-import { didHeLiked, didHeSaved } from "@/access-data/posts";
+//import { didHeLike, didHeSave } from "@/access-data/posts";
 
 import Image from "next/image";
 import Button from "./ui/MyButton";
@@ -7,16 +7,42 @@ import Link from "next/link";
 import LikeButton from "./LikeButton";
 import DeleteButton from "./DeleteButton";
 import SaveButton from "./SaveButton";
+import { useEffect, useState } from "react";
+import { didHeLike } from "@/actions/mutations/post actions/didHeLike";
+import { didHeSave } from "@/actions/mutations/post actions/didHeSave";
 
-async function Post({ id, content, created_at, profiles, user }: any) {
-  const liked = await didHeLiked({
+function Post({ id, content, created_at, profiles, liked, saved, user }: any) {
+  /*const [liked, setliked] = useState(false);
+  const [saved, setsaved] = useState(false);
+
+  useEffect(() => {
+    const check = async () => {
+      const data1 = await didHeLike({
+        user_id: user?.id,
+        post_id: id,
+      });
+
+      setliked(data1 as boolean);
+
+      const data2 = await didHeSave({
+        user_id: user?.id,
+        post_id: id,
+      });
+
+      setsaved(data2 as boolean);
+    };
+
+    check();
+  }, []);*/
+
+  /*const liked = await didHeLike({
     user_id: user?.id,
     post_id: id,
   });
-  const saved = await didHeSaved({
+  const saved = await didHeSave({
     user_id: user?.id,
     post_id: id,
-  });
+  });*/
 
   return (
     <div

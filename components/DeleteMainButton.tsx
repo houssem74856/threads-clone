@@ -12,21 +12,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { MdDeleteOutline } from "react-icons/md";
 
-export default function DeleteButton({ id }: any) {
-  const queryClient = useQueryClient();
-
-  const { mutate: deletePostMutation, isPending } = useMutation({
-    mutationFn: () => deletePost({ post_id: id }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["infinite"] });
-    },
-  });
-
+export default function DeleteMainButton({ id, parentId }: any) {
+  const router = useRouter();
   const handleDelete = async () => {
-    deletePostMutation();
+    await deletePost({ post_id: id });
+    if (parentId) {
+      router.push(`/post/${parentId}`);
+    } else {
+      router.push("/");
+    }
   };
 
   return (

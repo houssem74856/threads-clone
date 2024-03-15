@@ -3,6 +3,8 @@ import { HiBookmark } from "react-icons/hi2";
 import { MdAccountCircle } from "react-icons/md";
 import { IoNotifications } from "react-icons/io5";
 import SidebarItem from "./SidebarItem";
+import SearchSidebarItem from "./SearchSidebarItem";
+import { MessageCircle } from "lucide-react";
 
 export default function Routes({ currentUser }: any) {
   const routes = [
@@ -26,6 +28,11 @@ export default function Routes({ currentUser }: any) {
       label: "Profile",
       href: `/profile/${currentUser?.id}`,
     },
+    {
+      Icon: <MessageCircle size={22} />,
+      label: "Messages",
+      href: `/messages`,
+    },
   ];
 
   return (
@@ -33,6 +40,7 @@ export default function Routes({ currentUser }: any) {
       {routes.map((item) => (
         <SidebarItem key={item.label} {...item} currentUser={currentUser} />
       ))}
+      <SearchSidebarItem />
     </div>
   );
 }

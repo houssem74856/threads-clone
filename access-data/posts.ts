@@ -1,15 +1,31 @@
+import { didHeLike } from "@/actions/mutations/post actions/didHeLike";
+import { didHeSave } from "@/actions/mutations/post actions/didHeSave";
 import { supabaseServer } from "@/lib/supabaseServer";
 
-export const getPosts = async () => {
+export const getPosts = async (id: any) => {
   const db = await supabaseServer()
-  const{ data, error } = await db
+  const { data, error } = await db
     .from('posts')
     .select('*, profiles!user_id(id, username, avatar_url)')
     .is('parent_id',null)
     .order('created_at', { ascending: false })
+    .limit(5)
 
   if (error) {
     return {error: {message: error.message}};
+  }
+  
+  for(let i = 0; i < data.length; i++) {
+    const liked = await didHeLike({
+      user_id: id,
+      post_id: data[i].id,
+    });
+    const saved = await didHeSave({
+      user_id: id,
+      post_id: data[i].id,
+    });
+    
+    data[i] = {...data[i], liked: liked, saved: saved}
   }
   
   return {posts: data};
@@ -75,7 +91,7 @@ export const getUserPosts = async (id: string) => {
   return {posts: data}
 }
 
-export const didHeLiked = async ({user_id, post_id}: any) => {
+/*export const didHeLike = async ({user_id, post_id}: any) => {
   if(!user_id) return false
   
   const db = await supabaseServer()
@@ -93,7 +109,7 @@ export const didHeLiked = async ({user_id, post_id}: any) => {
   return false
 };
 
-export const didHeSaved = async ({user_id, post_id}: any) => {
+export const didHeSave = async ({user_id, post_id}: any) => {
   if(!user_id) return false
   
   const db = await supabaseServer()
@@ -109,4 +125,4 @@ export const didHeSaved = async ({user_id, post_id}: any) => {
     
   if(data.length > 0) return true
   return false
-};
+};*/
